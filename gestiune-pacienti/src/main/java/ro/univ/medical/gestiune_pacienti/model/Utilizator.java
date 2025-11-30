@@ -1,4 +1,4 @@
-package model;
+package ro.univ.medical.gestiune_pacienti.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

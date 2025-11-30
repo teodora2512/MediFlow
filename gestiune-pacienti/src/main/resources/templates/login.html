@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Autentificare</title>
+</head>
+<body>
+
+<h2>Autentificare în sistem</h2>
+
+<form th:action="@{/login}" method="post">
+    <div>
+        <label>Username</label>
+        <input type="text" name="username">
+    </div>
+
+    <div>
+        <label>Parola</label>
+        <input type="password" name="password">
+    </div>
+
+    <button type="submit">Login</button>
+
+    <p th:if="${param.error}">Date de autentificare invalide!</p>
+    <p th:if="${param.logout}">Delogat cu succes!</p>
+</form>
+
+</body>
+</html>
