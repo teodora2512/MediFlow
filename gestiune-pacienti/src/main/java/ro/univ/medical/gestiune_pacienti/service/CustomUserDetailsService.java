@@ -28,11 +28,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
 
+        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRol()); // ROLE_USER, ROLE_EDITOR
+        return new User(user.getUsername(), user.getParola(), Collections.singleton(authority));
 
-        return User.builder()
-                .username(user.getUsername())
-                .password(user.getParola())
-                .roles(user.getRol().replace("ROLE_", ""))
-                .build();
     }
 }
