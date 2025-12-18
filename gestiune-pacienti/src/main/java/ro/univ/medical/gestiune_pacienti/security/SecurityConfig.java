@@ -27,7 +27,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Forțează BCrypt fără DelegatingPasswordEncoder
         return new BCryptPasswordEncoder();
     }
 
@@ -48,17 +47,34 @@ public class SecurityConfig {
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return new CustomAuthenticationSuccessHandler();
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .headers(headers -> headers.cacheControl(cache -> cache.disable()))
                 .authenticationManager(authenticationManager())
+
+                // SECȚIUNEA DE AUTORIZARE (TOATE regulile)
                 .authorizeHttpRequests(auth -> auth
+
+                        // 1. Permite accesul la resursele publice (LOGIN, CSS, JS, etc.)
                         .requestMatchers("/login", "/css/**", "/js/**", "/webjars/**", "/error").permitAll()
+
+                        // 2. Permite accesul la rutele de redirecționare după login (Home)
                         .requestMatchers("/editor/**").hasRole("EDITOR")
                         .requestMatchers("/user/**").hasRole("USER")
+
+                        // 3. Permite accesul la vizualizarea listei de pacienți și la operații (căutare) pentru ORICINE
+                        .requestMatchers("/pacienti", "/pacienti/**", "/pacienti/operatii")
+                        .hasAnyRole("USER", "EDITOR")
+
+                        // 4. Restricționează OPERAȚIILE CRUD (care modifică date) doar pentru EDITOR
+                        .requestMatchers("/pacienti/adauga", "/pacienti/editeaza/**", "/pacienti/sterge/**")
+                        .hasRole("EDITOR")
+
+                        // 5. Orice altă cerere necesită autentificare
                         .anyRequest().authenticated()
                 )
+                // ... (restul configuratiei pentru formLogin, logout, sessionManagement)
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(authenticationSuccessHandler())
@@ -68,7 +84,14 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
+                )
+                .sessionManagement(session -> session
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
+                        .expiredUrl("/login?expired")
                 );
 
         return http.build();
