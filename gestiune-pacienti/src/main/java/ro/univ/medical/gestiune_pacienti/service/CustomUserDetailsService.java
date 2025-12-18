@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ro.univ.medical.gestiune_pacienti.model.Utilizator;
+import ro.univ.medical.gestiune_pacienti.entity.Utilizator;
 import ro.univ.medical.gestiune_pacienti.repository.UtilizatorRepository;
 
 import java.util.Collections;
@@ -27,12 +27,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         Utilizator utilizator = utilizatorRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilizatorul nu a fost găsit: " + username));
 
-        System.out.println("=== DEBUG UserDetails ===");
+    /*System.out.println("=== DEBUG UserDetails ===");
         System.out.println("Username: " + utilizator.getUsername());
         System.out.println("Password: " + utilizator.getParola());
-        System.out.println("Role: " + utilizator.getRol());
+        System.out.println("Role: " + utilizator.getRol());*/
 
-        // Rolurile sunt deja ROLE_USER și ROLE_EDITOR din baza de date
+
         List<GrantedAuthority> authorities = Collections.singletonList(
                 new SimpleGrantedAuthority(utilizator.getRol())
         );
