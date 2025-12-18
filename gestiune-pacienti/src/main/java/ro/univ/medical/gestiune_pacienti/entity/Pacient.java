@@ -1,4 +1,4 @@
-package ro.univ.medical.gestiune_pacienti.model;
+package ro.univ.medical.gestiune_pacienti.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,17 +15,11 @@ import java.time.LocalDate;
 public class Pacient {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idPacient;
+    private String cnp;
 
     @ManyToOne
-    @JoinColumn(name = "id_utilizator")
+    @JoinColumn(name = "id_utilizator") //(cel care a adaugat pacientul)
     private Utilizator utilizator;
-
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_sectie")
-    private Sectie sectie;
 
     @Column(nullable = false)
     private String nume;
@@ -33,11 +27,9 @@ public class Pacient {
     @Column(nullable = false)
     private String prenume;
 
-    @Column(nullable = false, unique = true)
-    private String CNP;
-
 
     private String diagnostic;
+
     private String tratament;
 
     @Column(nullable = false)
